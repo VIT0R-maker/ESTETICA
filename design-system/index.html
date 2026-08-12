@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Design System — Museum.</title>
+
+<!-- fonts (idênticos à referência) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_86e10c4bcbd4.css" rel="stylesheet"/>
+<link href="assets/css2_0fc20595ebff.css" rel="stylesheet"/>
+<link href="assets/css2_23afcbef9bdd.css" rel="stylesheet"/>
+<link href="assets/css2_82ced711bf49.css" rel="stylesheet"/>
+<link href="assets/css2_fa22aa91016e.css" rel="stylesheet"/>
+<link href="assets/css2_2b2d87bc82d8.css" rel="stylesheet"/>
+<link href="assets/css2_4fef849c83da.css" rel="stylesheet"/>
+<link href="assets/css2_a7b22b336fe1.css" rel="stylesheet"/>
+<link href="assets/css2_0b2072b66163.css" rel="stylesheet"/>
+<link href="assets/css2_9b8bf743d4a8.css" rel="stylesheet"/>
+<link href="assets/css2_8e191ef32247.css" rel="stylesheet"/>
+<link href="assets/css2_70fd47a02eed.css" rel="stylesheet"/>
+<link href="assets/css2_b52fc18295f8.css" rel="stylesheet"/>
+<link href="assets/css2_62759cd015bd.css" rel="stylesheet"/>
+<link href="assets/css2_f495c2faa2a6.css" rel="stylesheet"/>
+<link href="assets/css2_6f16cdd6fd9f.css" rel="stylesheet"/>
+<link href="assets/css2_94cb6f0c406a.css" rel="stylesheet"/>
+<link href="assets/css2_6c160a0c4e6f.css" rel="stylesheet"/>
+<link href="assets/css2_bd407d5ceb4b.css" rel="stylesheet"/>
+<link href="assets/css2_176e25227b5e.css" rel="stylesheet"/>
+<link href="assets/css2_e5ca562f8909.css" rel="stylesheet"/>
+
+<!-- css (idênticos à referência) -->
+<!-- base body, ticket-bottom serrated edge, .font-serif helper -->
+<link rel="stylesheet" href="assets/css/base.css"/>
+<!-- .font-* utility classes mapping to each loaded Google Font -->
+<link rel="stylesheet" href="assets/css/font-utilities.css"/>
+<!-- offline scroll/visibility fixes; resets animation-related utility classes -->
+<link rel="stylesheet" href="assets/css/scroll-fix.css"/>
+
+<!-- head-only js (idênticos à referência) -->
+<!-- Tailwind CSS runtime (utility classes used across the page) -->
+<script src="assets/resource_3fa48481346f.js"></script>
+<!-- Iconify web component runtime; renders <iconify-icon> tags throughout -->
+<script src="assets/iconify-icon_e19829e7f0e8.js"></script>
+
+<!-- ===== PALETA OFICIAL ORIENT — 8 cores, nada além disso ===== -->
+<style>
+  :root {
+    --dial-white:    #F7F5F1;  /* fundo das seções claras / texto sobre dark */
+    --numeral-black: #1C1C1C;  /* texto em fundo claro */
+    --orient-red:    #D93A2B;  /* acento e CTA */
+    --red-hover:     #B03426;  /* hover do vermelho */
+    --steel-light:   #C8C6C2;  /* bordas e divisores */
+    --steel-dark:    #6E6C68;  /* texto secundário no claro */
+    --strap-black:   #161616;  /* superfícies dark */
+    --backdrop:      #0A0805;  /* fundo das seções dark */
+  }
+</style>
+<script>
+  tailwind.config = {
+    theme: { extend: { colors: {
+      stone: { 50:'#F7F5F1', 100:'#F7F5F1', 200:'#C8C6C2', 300:'#C8C6C2', 400:'#C8C6C2',
+               500:'#6E6C68', 600:'#6E6C68', 700:'#6E6C68',
+               800:'#161616', 900:'#1C1C1C', 950:'#0A0805' },
+      white:  '#F7F5F1',
+      green:  { 500:'#D93A2B', 600:'#D93A2B' },
+      orange: { 200:'#D93A2B' },
+      blue:   { 900:'#161616' },
+    } } },
+  };
+</script>
+
+<style>
+  /* ------------------------------------------------------------------
+     A página é preta. As classes text-stone-* foram escritas para uma
+     superfície clara, então precisam inverter aqui.
+
+     IMPORTANTE: o Tailwind Play CDN injeta o CSS dele em runtime, no fim
+     do <head> — depois deste bloco. Com especificidade igual (1 classe)
+     ele ganharia no desempate por ordem. Por isso todas as regras abaixo
+     sobem de especificidade: prefixo `body` (0,1,1) para o padrão dark,
+     e duas classes (0,2,0) para as ilhas claras, que precisam vencer o
+     padrão dark. Sem !important, e a ordem continua irrelevante.
+     ------------------------------------------------------------------ */
+  html body { background-color: #000000; color: #F7F5F1; }
+
+  /* --- padrão sobre preto ---------------------------------------- */
+  body :is(.text-stone-900, .text-stone-800)              { color: #F7F5F1; } /* 19,3:1 */
+  body :is(.text-stone-800\/60,
+           .text-stone-700, .text-stone-600,
+           .text-stone-500)                               { color: #C8C6C2; } /* 12,3:1 */
+  body :is(.text-stone-400, .text-stone-400\/50,
+           .text-stone-300, .text-stone-200)              { color: #9A9791; } /*  7,2:1 */
+
+  /* --- superfícies translúcidas claras -----------------------------
+     bg-white/60, bg-white/50 e bg-stone-200/40/50 foram desenhadas para
+     compor sobre uma página clara. Sobre preto elas viram cinza-médio
+     (~#949391 / ~#646362) e aí NENHUMA cor de texto passa em contraste.
+     Nesta página elas recebem base sólida para renderizar como no design
+     real. bg-white/30, bg-white/20 e bg-stone-100/20 ficam de fora: são
+     demos de vidro sobre imagem/preto e funcionam com texto claro. ---- */
+  body :is(.bg-white\/60, .bg-white\/50)      { background-color: #F7F5F1; }
+  body :is(.bg-stone-200\/50,
+           .bg-stone-200\/40)                 { background-color: #C8C6C2; }
+
+  /* --- ilhas claras: reafirmam as cores originais ------------------
+     Duas famílias, porque o secundário do sistema (--steel-dark) só tem
+     contraste sobre dial-white; sobre steel-light ele cai para 3,1:1.
+     Lá o secundário passa a ser numeral-black. ---------------------- */
+  :is(.bg-white, .bg-white\/60, .bg-white\/50,
+      .bg-\[\#F7F5F1\], .bg-stone-50, .bg-stone-100)      { color: #1C1C1C; }
+
+  :is(.bg-white, .bg-white\/60, .bg-white\/50,
+      .bg-\[\#F7F5F1\], .bg-stone-50, .bg-stone-100)
+    :is(.text-stone-900, .text-stone-800)                 { color: #1C1C1C; } /* 16,2:1 */
+
+  :is(.bg-white, .bg-white\/60, .bg-white\/50,
+      .bg-\[\#F7F5F1\], .bg-stone-50, .bg-stone-100)
+    :is(.text-stone-800\/60, .text-stone-700, .text-stone-600,
+        .text-stone-500, .text-stone-400, .text-stone-400\/50,
+        .text-stone-300, .text-stone-200)                 { color: #6E6C68; } /*  4,8:1 */
+
+  /* superfícies steel-light (#C8C6C2): todo o texto vira numeral-black */
+  :is(.bg-\[\#C8C6C2\], .bg-stone-400,
+      .bg-stone-200\/50, .bg-stone-200\/40)               { color: #1C1C1C; }
+
+  :is(.bg-\[\#C8C6C2\], .bg-stone-400,
+      .bg-stone-200\/50, .bg-stone-200\/40)
+    :is(.text-stone-900, .text-stone-800, .text-stone-800\/60,
+        .text-stone-700, .text-stone-600, .text-stone-500,
+        .text-stone-400, .text-stone-400\/50,
+        .text-stone-300, .text-stone-200)                 { color: #1C1C1C; } /* 10,1:1 */
+
+  /* --- vermelho: texto claro, não escuro --------------------------
+     #F7F5F1 sobre #D93A2B dá 4,1:1; #1C1C1C dá 3,8:1. Branco vence e
+     é a convenção do CTA. ----------------------------------------- */
+  :is(.bg-\[\#D93A2B\], .bg-\[\#B03426\])                 { color: #F7F5F1; }
+  :is(.bg-\[\#D93A2B\], .bg-\[\#B03426\])
+    :is(.text-stone-900, .text-stone-800, .text-stone-800\/60,
+        .text-stone-700, .text-stone-600, .text-stone-500) { color: #F7F5F1; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden selection:bg-stone-800 selection:text-[#F7F5F1]">
+
+<!-- ============================================================ -->
+<!-- nav do design system (âncoras para cada seção)                -->
+<!-- ============================================================ -->
+<nav class="sticky top-0 z-50 w-full bg-black/90 backdrop-blur-md border-b border-stone-300/50">
+<div class="max-w-7xl mx-auto px-6 md:px-12 py-4 flex items-center justify-between gap-6">
+<div class="flex items-center gap-2 shrink-0">
+<div class="w-8 h-8 rounded-full bg-stone-800 text-[#F7F5F1] flex items-center justify-center">
+<span class="font-serif italic font-medium text-lg font-sans">M</span>
+</div>
+<span class="text-lg font-medium tracking-tight font-sans">Design System</span>
+</div>
+<div class="flex items-center gap-6 overflow-x-auto text-sm md:text-base text-stone-600">
+<a class="hover:text-stone-900 transition-colors font-sans whitespace-nowrap" href="#hero">Hero</a>
+<a class="hover:text-stone-900 transition-colors font-sans whitespace-nowrap" href="#tipografia">Tipografia</a>
+<a class="hover:text-stone-900 transition-colors font-sans whitespace-nowrap" href="#cores">Cores</a>
+<a class="hover:text-stone-900 transition-colors font-sans whitespace-nowrap" href="#componentes">Componentes</a>
+<a class="hover:text-stone-900 transition-colors font-sans whitespace-nowrap" href="#layout">Layout</a>
+<a class="hover:text-stone-900 transition-colors font-sans whitespace-nowrap" href="#motion">Motion</a>
+<a class="hover:text-stone-900 transition-colors font-sans whitespace-nowrap" href="#icones">Ícones</a>
+</div>
+</div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- 0) HERO — clone exato (apenas o texto foi adaptado)           -->
+<!-- ============================================================ -->
+<div id="hero" class="min-h-screen flex flex-col scroll-mt-16">
+
+<!-- hero -->
+<section class="flex-grow flex flex-col md:px-12 lg:flex-row lg:gap-20 lg:pb-12 w-full max-w-7xl mr-auto ml-auto pr-6 pb-12 pl-6 relative gap-x-12 gap-y-12 items-center justify-center">
+<div class="flex-1 w-full flex flex-col items-start pt-8 lg:pt-0 z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-400/30 bg-stone-100/20 backdrop-blur-sm text-sm md:text-base text-stone-700 mb-8">
+<span class="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+<span class="font-sans">Pattern Library Viva</span>
+</div>
+<h1 class="text-6xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight text-stone-900 mb-6 font-newsreader font-normal">
+<span class="block text-stone-600 font-newsreader font-normal">O</span>
+Sistema
+Visual
+</h1>
+<p class="text-lg md:text-xl text-stone-600 max-w-lg leading-relaxed mb-10 font-sans">
+Tipografia, cores, componentes e movimento desta identidade — catalogados a partir do código real, sem aproximações nem estilos inventados.
+</p>
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto mb-16">
+<button class="w-full sm:w-auto px-8 py-4 bg-stone-900 text-[#F7F5F1] rounded-full text-lg font-medium flex items-center justify-center gap-3 group transition-all hover:bg-stone-800 shadow-xl shadow-stone-900/10">
+<span class="font-sans">Ver Componentes</span>
+<iconify-icon class="group-hover:translate-x-1 transition-transform" icon="solar:arrow-right-linear" width="20"></iconify-icon>
+</button>
+<button class="w-full sm:w-auto px-8 py-4 bg-transparent border border-stone-800/20 text-stone-900 rounded-full text-lg font-medium flex items-center justify-center gap-3 hover:bg-stone-800/5 transition-colors">
+<iconify-icon icon="solar:play-circle-linear" width="20"></iconify-icon>
+<span class="font-sans">Ver Motion</span>
+</button>
+</div>
+<div class="w-full border-t border-stone-800/10 pt-8">
+<p class="text-sm text-stone-500 mb-4 font-medium uppercase tracking-widest font-sans">Identidade de</p>
+<div class="flex flex-wrap items-center gap-8 opacity-60 hover:opacity-100 transition-all duration-500">
+<img alt="Orient" class="h-7 w-auto" src="../assets/images/logo_orient.png"/>
+</div>
+</div>
+</div>
+<div class="flex-1 w-full h-full relative flex items-center justify-center lg:justify-end py-10 lg:py-20">
+<iconify-icon class="absolute top-0 right-10 text-stone-400/50 hidden lg:block" icon="solar:star-fall-linear" width="48"></iconify-icon>
+<div class="relative w-full max-w-md aspect-[3/4]">
+<div class="absolute inset-0 rounded-t-[10rem] rounded-b-[2rem] overflow-hidden shadow-2xl shadow-stone-900/20 group">
+<img alt="Mostrador Orient" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="../assets/images/section-2-img-1-v2.png"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 flex items-center justify-between text-[#F7F5F1]">
+<div>
+<p class="text-sm font-medium opacity-80 mb-1 font-sans">Peça em Destaque</p>
+<p class="text-2xl font-newsreader font-normal">Water Resist 200m</p>
+</div>
+<button class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-colors">
+<iconify-icon icon="solar:map-arrow-right-linear" width="24"></iconify-icon>
+</button>
+</div>
+</div>
+<div class="absolute -bottom-12 -left-4 md:-left-12 w-72 bg-[#C8C6C2] shadow-2xl rounded-lg overflow-hidden transform rotate-[-4deg] hover:rotate-0 transition-transform duration-500 z-20">
+<div class="p-5 border-b border-stone-900/10 flex justify-between items-start">
+<div>
+<p class="text-xs font-medium uppercase tracking-widest text-stone-800/60 mb-1 font-sans">Edição Limitada</p>
+<p class="font-serif text-xl text-stone-900 leading-tight font-sans">Orient Automático F6922</p>
+</div>
+<iconify-icon class="text-stone-800" icon="solar:ticket-star-linear" width="24"></iconify-icon>
+</div>
+<div class="p-5 bg-[#C8C6C2] relative">
+<div class="space-y-3">
+<div>
+<p class="text-xs text-stone-800/60 mb-0.5 font-sans">Referência</p>
+<p class="text-sm font-medium text-stone-900 font-sans">RA-AC0M02S</p>
+</div>
+<div>
+<p class="text-xs text-stone-800/60 mb-0.5 font-sans">Calibre</p>
+<p class="text-sm font-medium text-stone-900 font-sans">F6922</p>
+</div>
+</div>
+<div class="mt-5 flex items-end justify-between gap-1 h-10 opacity-70">
+<div class="w-1 bg-stone-900 h-full"></div>
+<div class="w-0.5 bg-stone-900 h-full"></div>
+<div class="w-2 bg-stone-900 h-full"></div>
+<div class="w-1 bg-stone-900 h-3/4"></div>
+<div class="w-3 bg-stone-900 h-full"></div>
+<div class="w-0.5 bg-stone-900 h-full"></div>
+<div class="w-1 bg-stone-900 h-3/4"></div>
+<div class="w-4 bg-stone-900 h-full"></div>
+<div class="w-1 bg-stone-900 h-full"></div>
+<div class="w-0.5 bg-stone-900 h-3/4"></div>
+<div class="w-2 bg-stone-900 h-full"></div>
+</div>
+</div>
+<div class="h-3 w-full bg-black" style="mask-image: radial-gradient(circle at 10px 0, transparent 0, transparent 5px, black 5px); mask-size: 20px 10px; mask-repeat: repeat-x;"></div>
+</div>
+<div class="hidden md:block absolute top-12 -right-12 w-48 bg-stone-900 rounded-2xl p-4 shadow-2xl z-30 transform rotate-[3deg] hover:rotate-0 transition-transform duration-500 border border-stone-700">
+<div class="flex items-center justify-between text-stone-400 mb-3">
+<iconify-icon icon="solar:arrow-left-linear" width="16"></iconify-icon>
+<div class="flex gap-2">
+<iconify-icon icon="solar:share-linear" width="16"></iconify-icon>
+<iconify-icon icon="solar:heart-linear" width="16"></iconify-icon>
+</div>
+</div>
+<div class="w-full aspect-square rounded-lg overflow-hidden mb-3 relative">
+<img alt="Calibre Orient" class="w-full h-full object-cover" src="../assets/images/galeria-6.png"/>
+<div class="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+<iconify-icon class="text-white" icon="solar:pause-linear" width="14"></iconify-icon>
+</div>
+</div>
+<div>
+<p class="text-xs text-stone-400 mb-0.5 font-sans">22 rubis</p>
+<p class="font-serif text-lg text-[#F7F5F1] leading-tight font-sans">Calibre à mostra</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1) TIPOGRAFIA                                                 -->
+<!-- ============================================================ -->
+<section id="tipografia" class="w-full bg-black py-24 px-6 md:px-12 relative font-sans border-t border-stone-300/30 scroll-mt-16">
+<div class="max-w-7xl mx-auto">
+
+<div class="max-w-2xl mb-16">
+<div class="flex items-center gap-2 text-stone-500 mb-6">
+<iconify-icon icon="solar:letter-linear" width="18"></iconify-icon>
+<span class="text-xs font-medium uppercase tracking-widest font-sans">01 — Tipografia</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-newsreader font-normal text-stone-900 mb-6 leading-[0.95] tracking-tight">
+Hierarquia em <span class="italic text-stone-600">Newsreader</span> e Sans
+</h2>
+<p class="text-lg text-stone-600 leading-relaxed font-sans">Títulos usam <span class="font-geist-mono text-base">.font-newsreader</span> em peso light; texto corrido usa <span class="font-geist-mono text-base">.font-sans</span>. Valores medidos no breakpoint maior de cada estilo.</p>
+<p class="text-stone-600 text-sm leading-relaxed mt-4">Duas notas fiéis à referência: <span class="font-geist-mono text-xs">.font-sans</span> é o utilitário do Tailwind (pilha <span class="font-geist-mono text-xs">ui-sans-serif, system-ui…</span>) e sobrepõe a <span class="font-geist-mono text-xs">'Instrument Sans'</span> declarada no <span class="font-geist-mono text-xs">body</span> — que, aliás, não está entre as fontes carregadas. Já <span class="font-geist-mono text-xs">.font-serif</span> aparece sempre acompanhada de <span class="font-geist-mono text-xs">.font-sans</span> no mesmo elemento.</p>
+</div>
+
+<!-- estilos sobre superfície clara -->
+<div class="border-b border-stone-300/50 pb-2 mb-2">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Superfície clara</p>
+</div>
+
+<!-- Heading 1 -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 1</p></div>
+<div class="flex-1 min-w-0">
+<h1 class="text-6xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight text-stone-900 mb-6 font-newsreader font-normal">
+<span class="block text-stone-600 font-newsreader font-normal">O</span>
+Sistema
+Visual
+</h1>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-6xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight font-newsreader font-normal</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">96px / 91px</p></div>
+</div>
+
+<!-- Heading 2 -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 2</p></div>
+<div class="flex-1 min-w-0">
+<h2 class="text-5xl md:text-6xl font-newsreader font-normal text-stone-900 mb-6 leading-[0.95] tracking-tight">
+Torne-se um <span class="italic text-stone-600">Patrono</span> das Artes
+</h2>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-5xl md:text-6xl font-newsreader font-normal leading-[0.95] tracking-tight</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">60px / 57px</p></div>
+</div>
+
+<!-- Heading 2 — variante newsletter -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 2 · centralizado</p></div>
+<div class="flex-1 min-w-0">
+<h2 class="text-4xl md:text-5xl font-newsreader font-normal text-stone-900 mb-6 tracking-tight">
+A Carta do Curador
+</h2>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-4xl md:text-5xl font-newsreader font-normal tracking-tight</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">48px / 48px</p></div>
+</div>
+
+<!-- Heading 3 -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 3</p></div>
+<div class="flex-1 min-w-0">
+<h3 class="text-3xl font-newsreader font-normal text-stone-900 mb-4 leading-tight">
+Tours personalizados, a cada passo.
+</h3>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-3xl font-newsreader font-normal leading-tight</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">30px / 38px</p></div>
+</div>
+
+<!-- Heading 3 — card -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 3 · card</p></div>
+<div class="flex-1 min-w-0">
+<h3 class="text-2xl font-newsreader font-medium text-stone-900 mb-2">Passe Acadêmico</h3>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-2xl font-newsreader font-medium</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">24px / 32px</p></div>
+</div>
+
+<!-- Heading 4 -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 4</p></div>
+<div class="flex-1 min-w-0">
+<h4 class="text-[11px] font-bold tracking-[0.15em] uppercase text-stone-500 font-sans">Sobre o Museum</h4>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-2">text-[11px] font-bold tracking-[0.15em] uppercase</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">11px / herdado</p></div>
+</div>
+
+<!-- Bold L -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Bold L</p></div>
+<div class="flex-1 min-w-0">
+<span class="text-lg font-medium tracking-tight font-sans">Museum.</span>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-2">text-lg font-medium tracking-tight font-sans</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">18px / 28px</p></div>
+</div>
+
+<!-- Bold M -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Bold M</p></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm text-stone-500 mb-4 font-medium uppercase tracking-widest font-sans">Em parceria com</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-sm font-medium uppercase tracking-widest font-sans</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">14px / 20px</p></div>
+</div>
+
+<!-- Bold S -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Bold S</p></div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500 font-sans">Apoiado por Institutos Culturais</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-2">text-xs font-semibold uppercase tracking-[0.2em] font-sans</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">12px / 16px</p></div>
+</div>
+
+<!-- Paragraph -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Paragraph</p></div>
+<div class="flex-1 min-w-0">
+<p class="text-lg md:text-xl text-stone-600 max-w-lg leading-relaxed font-sans">
+Mergulhe na genialidade de Rafael e Michelangelo. Uma exposição mundial curada com mais de 50 obras-primas nunca antes vistas.
+</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-3">text-lg md:text-xl text-stone-600 max-w-lg leading-relaxed font-sans</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">20px / 33px</p></div>
+</div>
+
+<!-- Regular L -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Regular L</p></div>
+<div class="flex-1 min-w-0">
+<p class="text-lg text-stone-600 leading-relaxed font-sans">Apoie a história e tenha acesso exclusivo às nossas exposições em constante mudança.</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-3">text-lg text-stone-600 leading-relaxed font-sans</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">18px / 29px</p></div>
+</div>
+
+<!-- Regular M -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Regular M</p></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-8 text-base text-stone-600">
+<a class="hover:text-stone-900 transition-colors font-sans" href="#componentes">Exposições</a>
+<a class="hover:text-stone-900 transition-colors font-sans" href="#componentes">Artistas</a>
+<a class="hover:text-stone-900 transition-colors font-sans" href="#componentes">Coleções</a>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-3">text-base text-stone-600 font-sans</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">16px / 24px</p></div>
+</div>
+
+<!-- Regular S -->
+<div class="border-t border-stone-300/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Regular S</p></div>
+<div class="flex-1 min-w-0">
+<p class="text-stone-600 text-sm leading-relaxed">Perfeito para estudantes e pesquisadores em busca de inspiração.</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-3">text-sm text-stone-600 leading-relaxed</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">14px / 23px</p></div>
+</div>
+
+<!-- estilos sobre superfície escura -->
+<div class="mt-16 bg-stone-950 rounded-[2.5rem] p-8 md:p-12">
+<div class="border-b border-stone-800/50 pb-4 mb-2">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Superfície escura — mesmas escalas, cores invertidas</p>
+</div>
+
+<div class="border-t border-stone-800/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 2 · manifesto</p></div>
+<div class="flex-1 min-w-0">
+<h2 class="text-3xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight font-newsreader font-normal text-[#F7F5F1]">
+Acreditamos que a arte não é apenas observação, é sobre <span class="text-white font-normal">conexão</span>.
+<span class="text-stone-600">O trecho secundário usa stone-600 para recuar na hierarquia dentro do mesmo bloco.</span>
+</h2>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-4">text-3xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight font-newsreader font-normal text-[#F7F5F1]</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">60px / 66px</p></div>
+</div>
+
+<div class="border-t border-stone-800/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Heading 3 · escuro</p></div>
+<div class="flex-1 min-w-0">
+<h3 class="text-3xl text-[#F7F5F1] font-newsreader font-normal mb-2">
+Nossos Visionários
+<span class="italic text-stone-500">Pensadores e Criadores</span>
+</h3>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-3xl text-[#F7F5F1] font-newsreader font-normal + span italic text-stone-500</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">30px / 36px</p></div>
+</div>
+
+<div class="border-t border-stone-800/50 py-8 flex flex-col lg:flex-row lg:items-baseline gap-4 lg:gap-8">
+<div class="lg:w-40 shrink-0"><p class="text-sm font-medium uppercase tracking-widest text-stone-500 font-sans">Display · gradiente</p></div>
+<div class="flex-1 min-w-0 overflow-hidden">
+<span class="text-[16vw] lg:text-[14rem] leading-none font-serif font-bold text-transparent bg-clip-text bg-gradient-to-t from-stone-800 via-stone-900 to-transparent tracking-tighter">MUSEUM</span>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-3">text-[16vw] lg:text-[14rem] leading-none font-serif font-bold text-transparent bg-clip-text bg-gradient-to-t from-stone-800 via-stone-900 to-transparent tracking-tighter</p>
+</div>
+<div class="lg:w-32 shrink-0 lg:text-right"><p class="text-sm text-stone-500 font-sans">224px / 224px</p></div>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2) CORES & SUPERFÍCIES                                        -->
+<!-- ============================================================ -->
+<section id="cores" class="w-full bg-black py-24 px-6 md:px-12 relative font-sans border-t border-stone-300/30 scroll-mt-16">
+<div class="max-w-7xl mx-auto">
+
+<div class="max-w-2xl mb-16">
+<div class="flex items-center gap-2 text-stone-500 mb-6">
+<iconify-icon icon="solar:leaf-linear" width="18"></iconify-icon>
+<span class="text-xs font-medium uppercase tracking-widest font-sans">02 — Cores &amp; Superfícies</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-newsreader font-normal text-stone-900 mb-6 leading-[0.95] tracking-tight">
+Oito cores, <span class="italic text-stone-600">nada</span> além disso
+</h2>
+<p class="text-lg text-stone-600 leading-relaxed font-sans">Paleta oficial extraída do relógio Orient. A escala <span class="font-geist-mono text-base">stone</span> do Tailwind foi remapeada para esses tokens, então os nomes de classe documentados aqui continuam válidos.</p>
+</div>
+
+<p class="text-sm text-stone-500 mb-4 font-medium uppercase tracking-widest font-sans">Os 8 tokens</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#F7F5F1] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Dial white · #F7F5F1</p>
+<p class="text-xs text-stone-800/60 font-sans">Fundo das seções claras. Também é o texto sobre fundo dark.</p>
+<p class="font-geist-mono text-xs text-stone-500">--dial-white</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#1C1C1C] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Numeral black · #1C1C1C</p>
+<p class="text-xs text-stone-800/60 font-sans">Texto em fundo claro.</p>
+<p class="font-geist-mono text-xs text-stone-500">--numeral-black</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#D93A2B] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Orient red · #D93A2B</p>
+<p class="text-xs text-stone-800/60 font-sans">Acento e CTA. Doses pequenas — nunca como área grande.</p>
+<p class="font-geist-mono text-xs text-stone-500">--orient-red</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#B03426] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Red hover · #B03426</p>
+<p class="text-xs text-stone-800/60 font-sans">Estado hover do vermelho.</p>
+<p class="font-geist-mono text-xs text-stone-500">--red-hover</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#C8C6C2] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Steel light · #C8C6C2</p>
+<p class="text-xs text-stone-800/60 font-sans">Bordas e divisores. No dark, também o texto de apoio.</p>
+<p class="font-geist-mono text-xs text-stone-500">--steel-light</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#6E6C68] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Steel dark · #6E6C68</p>
+<p class="text-xs text-stone-800/60 font-sans">Texto secundário no claro.</p>
+<p class="font-geist-mono text-xs text-stone-500">--steel-dark</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#161616] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Strap black · #161616</p>
+<p class="text-xs text-stone-800/60 font-sans">Superfícies dark — cards e blocos elevados.</p>
+<p class="font-geist-mono text-xs text-stone-500">--strap-black</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#0A0805] border border-stone-300/30"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Backdrop · #0A0805</p>
+<p class="text-xs text-stone-800/60 font-sans">Fundo das seções dark.</p>
+<p class="font-geist-mono text-xs text-stone-500">--backdrop</p>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-4 font-medium uppercase tracking-widest font-sans">Bordas, divisores e overlays</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm">
+<p class="text-sm font-medium text-stone-900 font-sans mb-4">Sobre claro</p>
+<div class="border-t border-stone-300/30 pt-3 mb-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-300/30 — divisor entre seções</p></div>
+<div class="border-t border-stone-300/50 pt-3 mb-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-300/50 — divisores da newsletter</p></div>
+<div class="border-t border-stone-800/10 pt-3 mb-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-800/10 — filete acima dos parceiros</p></div>
+<div class="border-t border-stone-900/10 pt-3 mb-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-900/10 — interior do card de ingresso</p></div>
+<div class="border-t border-stone-200 pt-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-200 — contorno do card de plano</p></div>
+</div>
+<div class="bg-stone-950 rounded-3xl p-8">
+<p class="text-sm font-medium text-[#F7F5F1] font-sans mb-4">Sobre escuro</p>
+<div class="border-t border-stone-900/50 pt-3 mb-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-900/50 — topo da seção missão</p></div>
+<div class="border-t border-stone-800/50 pt-3 mb-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-800/50 — grade de links do footer</p></div>
+<div class="border-t border-stone-700 pt-3 mb-3"><p class="font-geist-mono text-xs text-stone-500">border-stone-700 — contorno do card do artista</p></div>
+<div class="border-t border-white/20 pt-3"><p class="font-geist-mono text-xs text-stone-500">border-white/20 — topo das abas e botão de vidro</p></div>
+</div>
+<div class="relative rounded-3xl overflow-hidden aspect-[4/3] bg-stone-900">
+<img alt="Construção" class="absolute inset-0 w-full h-full object-cover" src="../assets/images/section-construcao.png"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6">
+<p class="text-stone-300 text-sm font-sans mb-1">Overlay</p>
+<p class="text-[#F7F5F1] font-newsreader text-xl">from-stone-950/80</p>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-4 font-medium uppercase tracking-widest font-sans">Vidro (blur)</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="relative rounded-3xl overflow-hidden aspect-[16/10] bg-stone-900 flex items-center justify-center">
+<img alt="Mostrador" class="absolute inset-0 w-full h-full object-cover" src="../assets/images/section-mostrador.png"/>
+<button class="relative w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-colors text-white">
+<iconify-icon icon="solar:map-arrow-right-linear" width="24"></iconify-icon>
+</button>
+<p class="absolute bottom-4 left-4 font-geist-mono text-xs text-white">bg-white/20 backdrop-blur-md</p>
+</div>
+<div class="rounded-3xl bg-stone-200/40 p-6 flex items-center justify-center">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-400/30 bg-stone-100/20 backdrop-blur-sm text-sm md:text-base text-stone-700">
+<span class="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+<span class="font-sans">bg-stone-100/20 backdrop-blur-sm</span>
+</div>
+</div>
+<div class="rounded-3xl bg-stone-200/40 p-6 flex items-center justify-center">
+<div class="w-full bg-white/60 backdrop-blur-md rounded-2xl p-2 shadow-sm border border-white/40 flex items-center justify-between gap-4 pr-2">
+<div class="h-12 px-6 flex items-center text-stone-600 text-lg font-normal tracking-wide w-full">bg-white/60 backdrop-blur-md</div>
+<div class="shrink-0 h-10 w-10 bg-gradient-to-br from-[#D93A2B] to-[#C8C6C2] rounded-xl flex items-center justify-center text-stone-900 font-newsreader italic font-semibold shadow-inner">M</div>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-4 font-medium uppercase tracking-widest font-sans">Gradientes</p>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-gradient-to-br from-[#D93A2B] to-[#C8C6C2] shadow-inner"></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Amarelo → rosa</p>
+<p class="text-xs text-stone-800/60 font-sans">Logo mark quadrado da barra de vidro</p>
+<p class="font-geist-mono text-xs text-stone-500">bg-gradient-to-br from-[#D93A2B] to-[#C8C6C2]</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-stone-400 relative overflow-hidden"><div class="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent"></div></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Scrim do hero</p>
+<p class="text-xs text-stone-800/60 font-sans">Legibilidade do texto sobre a imagem do hero</p>
+<p class="font-geist-mono text-xs text-stone-500">bg-gradient-to-t from-stone-900/60 via-transparent to-transparent</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-stone-400 relative overflow-hidden"><div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent"></div></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Scrim dos cards</p>
+<p class="text-xs text-stone-800/60 font-sans">Cards de imagem da seção missão</p>
+<p class="font-geist-mono text-xs text-stone-500">bg-gradient-to-t from-stone-950/80 via-transparent to-transparent</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-stone-950 relative overflow-hidden"><div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-2/3 bg-gradient-to-t from-blue-900/10 via-stone-900/50 to-transparent blur-3xl"></div></div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans">Névoa do painel</p>
+<p class="text-xs text-stone-800/60 font-sans">Base do painel escuro do feature</p>
+<p class="font-geist-mono text-xs text-stone-500">bg-gradient-to-t from-blue-900/10 via-stone-900/50 to-transparent blur-3xl</p>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-4 font-medium uppercase tracking-widest font-sans">Sombras</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-white shadow-sm"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-sm — cards de plano claros, barra de vidro</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-stone-900 shadow-xl shadow-stone-900/10"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-xl shadow-stone-900/10 — botão primário</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-white shadow-2xl shadow-stone-900/20"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-2xl shadow-stone-900/20 — imagem do hero</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#D93A2B] shadow-lg shadow-[#D93A2B]/10"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-lg shadow-[#D93A2B]/10 — botão lima</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#D93A2B] shadow-[0_0_20px_rgba(217,58,43,0.1)]"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-[0_0_20px_rgba(217,58,43,0.1)] — botão do plano destacado</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-[#D93A2B] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-[0_-4px_20px_rgba(0,0,0,0.05)] — aba ativa</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-stone-900 shadow-2xl shadow-black/20"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-2xl shadow-black/20 — cards de imagem</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="h-24 rounded-2xl bg-gradient-to-br from-[#D93A2B] to-[#C8C6C2] shadow-inner"></div>
+<p class="font-geist-mono text-xs text-stone-500">shadow-inner — logo mark da barra de vidro</p>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3) COMPONENTES DE UI                                          -->
+<!-- ============================================================ -->
+<section id="componentes" class="w-full bg-black py-24 px-6 md:px-12 relative font-sans border-t border-stone-300/30 scroll-mt-16">
+<div class="max-w-7xl mx-auto">
+
+<div class="max-w-2xl mb-16">
+<div class="flex items-center gap-2 text-stone-500 mb-6">
+<iconify-icon icon="solar:crown-star-linear" width="18"></iconify-icon>
+<span class="text-xs font-medium uppercase tracking-widest font-sans">03 — Componentes</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-newsreader font-normal text-stone-900 mb-6 leading-[0.95] tracking-tight">
+Peças em <span class="italic text-stone-600">estado</span>
+</h2>
+<p class="text-lg text-stone-600 leading-relaxed font-sans">Cada estado abaixo é a mesma marcação da referência com as classes que o <span class="font-geist-mono text-base">:hover</span> / <span class="font-geist-mono text-base">:active</span> / <span class="font-geist-mono text-base">:focus</span> aplicariam já ativadas — passe o mouse na coluna "default" para conferir.</p>
+</div>
+
+<!-- botões -->
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Botão primário (pílula)</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Default</p>
+<button class="w-full sm:w-auto px-8 py-4 bg-stone-900 text-[#F7F5F1] rounded-full text-lg font-medium flex items-center justify-center gap-3 group transition-all hover:bg-stone-800 shadow-xl shadow-stone-900/10">
+<span class="font-sans">Reservar Acesso</span>
+<iconify-icon class="group-hover:translate-x-1 transition-transform" icon="solar:arrow-right-linear" width="20"></iconify-icon>
+</button>
+<p class="font-geist-mono text-xs text-stone-500 break-words">px-8 py-4 bg-stone-900 text-[#F7F5F1] rounded-full text-lg font-medium transition-all shadow-xl shadow-stone-900/10</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Hover</p>
+<button class="w-full sm:w-auto px-8 py-4 bg-stone-800 text-[#F7F5F1] rounded-full text-lg font-medium flex items-center justify-center gap-3 transition-all shadow-xl shadow-stone-900/10">
+<span class="font-sans">Reservar Acesso</span>
+<iconify-icon class="translate-x-1 transition-transform" icon="solar:arrow-right-linear" width="20"></iconify-icon>
+</button>
+<p class="font-geist-mono text-xs text-stone-500 break-words">hover:bg-stone-800 + group-hover:translate-x-1 no ícone</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Focus / Disabled</p>
+<div class="h-[60px] flex items-center">
+<p class="text-stone-600 text-sm leading-relaxed">Não existem estados <span class="font-geist-mono text-xs">focus:</span> nem <span class="font-geist-mono text-xs">disabled:</span> declarados para botões na referência — o foco usa o anel padrão do navegador.</p>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Botão secundário (contorno)</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Default</p>
+<button class="w-full sm:w-auto px-8 py-4 bg-transparent border border-stone-800/20 text-stone-900 rounded-full text-lg font-medium flex items-center justify-center gap-3 hover:bg-stone-800/5 transition-colors">
+<iconify-icon icon="solar:play-circle-linear" width="20"></iconify-icon>
+<span class="font-sans">Audioguia</span>
+</button>
+<p class="font-geist-mono text-xs text-stone-500 break-words">bg-transparent border border-stone-800/20 rounded-full transition-colors</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Hover</p>
+<button class="w-full sm:w-auto px-8 py-4 bg-stone-800/5 border border-stone-800/20 text-stone-900 rounded-full text-lg font-medium flex items-center justify-center gap-3 transition-colors">
+<iconify-icon icon="solar:play-circle-linear" width="20"></iconify-icon>
+<span class="font-sans">Audioguia</span>
+</button>
+<p class="font-geist-mono text-xs text-stone-500 break-words">hover:bg-stone-800/5</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Uso</p>
+<div class="h-[60px] flex items-center">
+<p class="text-stone-600 text-sm leading-relaxed">Ação secundária ao lado do primário no hero; sempre com ícone à esquerda.</p>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">CTA da navegação (pílula compacta)</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Default</p>
+<a class="inline-flex items-center justify-center px-5 py-2.5 bg-stone-800 text-[#F7F5F1] rounded-full text-base font-medium transition-transform hover:scale-105 active:scale-95 font-sans" href="#componentes">Comprar Ingressos</a>
+<p class="font-geist-mono text-xs text-stone-500 break-words">px-5 py-2.5 bg-stone-800 rounded-full text-base font-medium transition-transform</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Hover</p>
+<a class="inline-flex items-center justify-center px-5 py-2.5 bg-stone-800 text-[#F7F5F1] rounded-full text-base font-medium transition-transform scale-105 font-sans" href="#componentes">Comprar Ingressos</a>
+<p class="font-geist-mono text-xs text-stone-500 break-words">hover:scale-105</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Active</p>
+<a class="inline-flex items-center justify-center px-5 py-2.5 bg-stone-800 text-[#F7F5F1] rounded-full text-base font-medium transition-transform scale-95 font-sans" href="#componentes">Comprar Ingressos</a>
+<p class="font-geist-mono text-xs text-stone-500 break-words">active:scale-95</p>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Botão de acento (lima) — sobre superfície escura</p>
+<div class="bg-stone-950 rounded-[2.5rem] p-8 md:p-12 mb-16">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Default</p>
+<button class="group w-full md:w-auto inline-flex items-center justify-center gap-3 px-6 py-4 bg-[#D93A2B] hover:bg-[#B03426] text-stone-900 rounded-xl font-medium transition-all duration-300 transform hover:-translate-y-1 shadow-lg shadow-[#D93A2B]/10">
+<span class="font-sans">Conheça a Equipe</span>
+<iconify-icon class="group-hover:translate-x-1 transition-transform duration-300" icon="solar:arrow-right-linear" width="20"></iconify-icon>
+</button>
+<p class="font-geist-mono text-xs text-stone-500 break-words">px-6 py-4 bg-[#D93A2B] rounded-xl font-medium transition-all duration-300 shadow-lg shadow-[#D93A2B]/10</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Hover</p>
+<button class="w-full md:w-auto inline-flex items-center justify-center gap-3 px-6 py-4 bg-[#B03426] text-stone-900 rounded-xl font-medium transition-all duration-300 transform -translate-y-1 shadow-lg shadow-[#D93A2B]/10">
+<span class="font-sans">Conheça a Equipe</span>
+<iconify-icon class="translate-x-1 transition-transform duration-300" icon="solar:arrow-right-linear" width="20"></iconify-icon>
+</button>
+<p class="font-geist-mono text-xs text-stone-500 break-words">hover:bg-[#B03426] hover:-translate-y-1 + seta translate-x-1</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Uso</p>
+<p class="text-stone-400 text-sm leading-relaxed">Único botão com cantos <span class="font-geist-mono text-xs">rounded-xl</span> e cor de acento; reservado à CTA da seção missão.</p>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Botões circulares de ícone</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Vidro · default / hover</p>
+<div class="flex items-center gap-4 p-6 rounded-2xl bg-stone-900">
+<button class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-colors text-white">
+<iconify-icon icon="solar:map-arrow-right-linear" width="24"></iconify-icon>
+</button>
+<button class="w-12 h-12 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center transition-colors text-white">
+<iconify-icon icon="solar:map-arrow-right-linear" width="24"></iconify-icon>
+</button>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words">w-12 h-12 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Sólido · default / hover</p>
+<div class="flex items-center gap-4 p-6 rounded-2xl bg-[#D93A2B]">
+<button class="w-12 h-12 rounded-full bg-stone-900 text-[#D93A2B] flex items-center justify-center transition-transform shadow-lg shadow-stone-900/20">
+<iconify-icon icon="solar:arrow-right-linear" width="24"></iconify-icon>
+</button>
+<button class="w-12 h-12 rounded-full bg-stone-900 text-[#D93A2B] flex items-center justify-center scale-110 transition-transform shadow-lg shadow-stone-900/20">
+<iconify-icon icon="solar:arrow-right-linear" width="24"></iconify-icon>
+</button>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words">w-12 h-12 rounded-full bg-stone-900 group-hover:scale-110 shadow-lg shadow-stone-900/20</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Texto + ícone (nav)</p>
+<div class="flex items-center gap-6 p-6 rounded-2xl bg-white/60 backdrop-blur-md border border-white/40">
+<button class="flex items-center gap-2 text-base hover:text-stone-600 transition-colors">
+<iconify-icon icon="solar:magnifer-linear" width="20"></iconify-icon>
+<span class="font-sans">Buscar</span>
+</button>
+<button class="flex items-center gap-2 text-base text-stone-600 transition-colors">
+<iconify-icon icon="solar:magnifer-linear" width="20"></iconify-icon>
+<span class="font-sans">Buscar</span>
+</button>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words">text-base hover:text-stone-600 transition-colors</p>
+</div>
+</div>
+
+<!-- toggle -->
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Toggle segmentado</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Estado real</p>
+<div class="relative flex items-center bg-stone-200/50 p-1.5 rounded-full w-max">
+<button class="relative z-10 px-6 py-2.5 text-sm font-medium text-stone-900 rounded-full transition-colors bg-white shadow-sm">Anual</button>
+<button class="relative z-10 px-6 py-2.5 text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">Mensal</button>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words">bg-stone-200/50 p-1.5 rounded-full · ativo: bg-white shadow-sm</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Item inativo em hover</p>
+<div class="relative flex items-center bg-stone-200/50 p-1.5 rounded-full w-max">
+<button class="relative z-10 px-6 py-2.5 text-sm font-medium text-stone-900 rounded-full transition-colors bg-white shadow-sm">Anual</button>
+<button class="relative z-10 px-6 py-2.5 text-sm font-medium text-stone-900 transition-colors">Mensal</button>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words">hover:text-stone-900</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Badges</p>
+<div class="flex flex-wrap items-center gap-3">
+<span class="inline-block px-3 py-1 rounded-full bg-stone-100 text-xs font-semibold text-stone-600 tracking-wide uppercase">Estudante</span>
+<span class="inline-block px-3 py-1 rounded-full bg-[#D93A2B] text-xs font-semibold text-stone-900 tracking-wide uppercase">Mais Popular</span>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-400/30 bg-stone-100/20 backdrop-blur-sm text-sm text-stone-700">
+<span class="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+<span class="font-sans">Aberto Agora</span>
+</div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words">px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase</p>
+</div>
+</div>
+
+<!-- input -->
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Campo de e-mail (newsletter)</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-16">
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Default</p>
+<form class="w-full max-w-md relative flex items-center group" onsubmit="return false;">
+<iconify-icon class="absolute left-4 text-stone-400 transition-colors group-focus-within:text-stone-800" icon="solar:mailbox-linear" width="24"></iconify-icon>
+<input class="w-full pl-12 pr-32 py-4 bg-white/50 backdrop-blur-sm border border-stone-300 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:bg-white transition-all text-stone-900 placeholder:text-stone-500 font-sans" placeholder="amante.da.arte@exemplo.com" required="" type="email"/>
+<button class="absolute right-1.5 top-1.5 bottom-1.5 px-6 bg-stone-900 text-[#F7F5F1] rounded-full text-sm font-medium hover:scale-95 transition-transform" type="submit">Inscrever</button>
+</form>
+<p class="font-geist-mono text-xs text-stone-500 break-words">pl-12 pr-32 py-4 bg-white/50 backdrop-blur-sm border border-stone-300 rounded-full placeholder:text-stone-500</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-xs font-medium uppercase tracking-widest text-stone-500 font-sans">Focus (anel + ícone escurecido)</p>
+<form class="w-full max-w-md relative flex items-center" onsubmit="return false;">
+<iconify-icon class="absolute left-4 text-stone-800 transition-colors" icon="solar:mailbox-linear" width="24"></iconify-icon>
+<input class="w-full pl-12 pr-32 py-4 bg-white backdrop-blur-sm border border-stone-300 rounded-full outline-none ring-2 ring-stone-900/10 transition-all text-stone-900 placeholder:text-stone-500 font-sans" placeholder="amante.da.arte@exemplo.com" type="email"/>
+<button class="absolute right-1.5 top-1.5 bottom-1.5 px-6 bg-stone-900 text-[#F7F5F1] rounded-full text-sm font-medium scale-95 transition-transform" type="submit">Inscrever</button>
+</form>
+<p class="font-geist-mono text-xs text-stone-500 break-words">focus:ring-2 focus:ring-stone-900/10 focus:bg-white · group-focus-within:text-stone-800 · botão hover:scale-95</p>
+</div>
+</div>
+<p class="text-stone-600 text-sm leading-relaxed mb-16 max-w-2xl">Este é o único campo de formulário da referência. Não há estado de erro declarado — a validação é a nativa do atributo <span class="font-geist-mono text-xs">required</span> em <span class="font-geist-mono text-xs">type="email"</span>.</p>
+
+<!-- cards -->
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Cards de plano — padrão, destacado e hover de borda</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between group hover:border-stone-400 transition-colors duration-300">
+<div>
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center text-stone-600">
+<iconify-icon icon="solar:backpack-linear" width="24"></iconify-icon>
+</div>
+<span class="inline-block px-3 py-1 rounded-full bg-stone-100 text-xs font-semibold text-stone-600 tracking-wide uppercase">Estudante</span>
+</div>
+<h3 class="text-2xl font-newsreader font-medium text-stone-900 mb-2">Passe Acadêmico</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-light font-newsreader text-stone-900">R$24</span>
+<span class="text-stone-500 text-sm">/ano</span>
+</div>
+<p class="text-stone-600 text-sm mb-8 leading-relaxed">Card padrão — <span class="font-geist-mono text-xs">border-stone-200</span>, hover leva a borda para <span class="font-geist-mono text-xs">stone-400</span>.</p>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-sm text-stone-700">
+<iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon>
+Item de lista com ícone linear
+</li>
+<li class="flex items-center gap-3 text-sm text-stone-700">
+<iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon>
+Espaçamento vertical space-y-4
+</li>
+</ul>
+</div>
+<button class="w-full py-4 rounded-xl border border-stone-200 text-stone-900 font-medium hover:bg-stone-50 transition-colors">Inscrever-se</button>
+</div>
+
+<div class="bg-stone-900 rounded-3xl p-8 shadow-2xl flex flex-col justify-between relative overflow-hidden transform md:-translate-y-4">
+<div class="absolute top-0 right-0 p-32 bg-stone-800/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="w-12 h-12 rounded-xl bg-stone-800 flex items-center justify-center text-[#D93A2B]">
+<iconify-icon icon="solar:user-linear" width="24"></iconify-icon>
+</div>
+<span class="inline-block px-3 py-1 rounded-full bg-[#D93A2B] text-xs font-semibold text-stone-900 tracking-wide uppercase">Mais Popular</span>
+</div>
+<h3 class="text-2xl font-newsreader font-medium text-white mb-2 relative z-10">Membro Curador</h3>
+<div class="flex items-baseline gap-1 mb-6 relative z-10">
+<span class="text-4xl font-light font-newsreader text-white">R$120</span>
+<span class="text-stone-400 text-sm">/ano</span>
+</div>
+<p class="text-stone-400 text-sm mb-8 leading-relaxed relative z-10">Card destacado — elevado em <span class="font-geist-mono text-xs">md:-translate-y-4</span>, com glow interno em blur-3xl.</p>
+<ul class="space-y-4 mb-8 relative z-10">
+<li class="flex items-center gap-3 text-sm text-stone-200">
+<iconify-icon class="text-[#D93A2B] shrink-0" icon="solar:check-circle-bold" width="20"></iconify-icon>
+Ícone na variante bold
+</li>
+<li class="flex items-center gap-3 text-sm text-stone-200">
+<iconify-icon class="text-[#D93A2B] shrink-0" icon="solar:check-circle-bold" width="20"></iconify-icon>
+Acento #D93A2B no ícone
+</li>
+</ul>
+</div>
+<button class="w-full py-4 rounded-xl bg-[#D93A2B] text-stone-900 font-medium hover:bg-[#B03426] transition-colors shadow-[0_0_20px_rgba(217,58,43,0.1)] relative z-10">Tornar-se Membro</button>
+</div>
+
+<div class="bg-white rounded-3xl p-8 border border-stone-400 shadow-sm flex flex-col justify-between transition-colors duration-300">
+<div>
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center text-stone-600">
+<iconify-icon icon="solar:crown-linear" width="24"></iconify-icon>
+</div>
+<span class="inline-block px-3 py-1 rounded-full bg-stone-100 text-xs font-semibold text-stone-600 tracking-wide uppercase">Hover</span>
+</div>
+<h3 class="text-2xl font-newsreader font-medium text-stone-900 mb-2">Patrono Vitalício</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-light font-newsreader text-stone-900">R$500</span>
+<span class="text-stone-500 text-sm">/ano</span>
+</div>
+<p class="text-stone-600 text-sm mb-8 leading-relaxed">Mesmo card com <span class="font-geist-mono text-xs">hover:border-stone-400</span> já aplicado, e o botão em <span class="font-geist-mono text-xs">hover:bg-stone-50</span>.</p>
+</div>
+<button class="w-full py-4 rounded-xl border border-stone-200 text-stone-900 font-medium bg-stone-50 transition-colors">Inscrever-se</button>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Cards de imagem, ingresso e artista</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16 items-start">
+<div class="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-stone-900 shadow-2xl shadow-black/20">
+<img alt="Mostrador" class="absolute inset-0 w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105 opacity-80 group-hover:opacity-100" src="../assets/images/section-mostrador.png"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6">
+<p class="text-stone-300 text-sm font-sans mb-1">Restauração</p>
+<p class="text-[#F7F5F1] font-newsreader text-xl">Preservando a História</p>
+</div>
+</div>
+
+<div class="pt-4 pb-16 flex justify-center">
+<div class="w-72 bg-[#C8C6C2] shadow-2xl rounded-lg overflow-hidden transform rotate-[-4deg] hover:rotate-0 transition-transform duration-500">
+<div class="p-5 border-b border-stone-900/10 flex justify-between items-start">
+<div>
+<p class="text-xs font-medium uppercase tracking-widest text-stone-800/60 mb-1 font-sans">Edição Limitada</p>
+<p class="font-serif text-xl text-stone-900 leading-tight font-sans">Orient Automático F6922</p>
+</div>
+<iconify-icon class="text-stone-800" icon="solar:ticket-star-linear" width="24"></iconify-icon>
+</div>
+<div class="p-5 bg-[#C8C6C2] relative">
+<div class="space-y-3">
+<div>
+<p class="text-xs text-stone-800/60 mb-0.5 font-sans">Referência</p>
+<p class="text-sm font-medium text-stone-900 font-sans">RA-AC0M02S</p>
+</div>
+<div>
+<p class="text-xs text-stone-800/60 mb-0.5 font-sans">Calibre</p>
+<p class="text-sm font-medium text-stone-900 font-sans">F6922</p>
+</div>
+</div>
+<div class="mt-5 flex items-end justify-between gap-1 h-10 opacity-70">
+<div class="w-1 bg-stone-900 h-full"></div>
+<div class="w-0.5 bg-stone-900 h-full"></div>
+<div class="w-2 bg-stone-900 h-full"></div>
+<div class="w-1 bg-stone-900 h-3/4"></div>
+<div class="w-3 bg-stone-900 h-full"></div>
+<div class="w-0.5 bg-stone-900 h-full"></div>
+<div class="w-1 bg-stone-900 h-3/4"></div>
+<div class="w-4 bg-stone-900 h-full"></div>
+<div class="w-1 bg-stone-900 h-full"></div>
+<div class="w-0.5 bg-stone-900 h-3/4"></div>
+<div class="w-2 bg-stone-900 h-full"></div>
+</div>
+</div>
+<div class="h-3 w-full bg-black" style="mask-image: radial-gradient(circle at 10px 0, transparent 0, transparent 5px, black 5px); mask-size: 20px 10px; mask-repeat: repeat-x;"></div>
+</div>
+</div>
+
+<div class="flex justify-center pt-4">
+<div class="w-48 bg-stone-900 rounded-2xl p-4 shadow-2xl transform rotate-[3deg] hover:rotate-0 transition-transform duration-500 border border-stone-700">
+<div class="flex items-center justify-between text-stone-400 mb-3">
+<iconify-icon icon="solar:arrow-left-linear" width="16"></iconify-icon>
+<div class="flex gap-2">
+<iconify-icon icon="solar:share-linear" width="16"></iconify-icon>
+<iconify-icon icon="solar:heart-linear" width="16"></iconify-icon>
+</div>
+</div>
+<div class="w-full aspect-square rounded-lg overflow-hidden mb-3 relative">
+<img alt="Calibre Orient" class="w-full h-full object-cover" src="../assets/images/galeria-6.png"/>
+<div class="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+<iconify-icon class="text-white" icon="solar:pause-linear" width="14"></iconify-icon>
+</div>
+</div>
+<div>
+<p class="text-xs text-stone-400 mb-0.5 font-sans">22 rubis</p>
+<p class="font-serif text-lg text-[#F7F5F1] leading-tight font-sans">Calibre à mostra</p>
+</div>
+</div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Abas em pasta + painel</p>
+<div class="mb-16">
+<div class="flex items-end pl-4 md:pl-20 relative z-0 translate-y-[1px]">
+<div class="group w-28 md:w-36 h-14 bg-[#F7F5F1] rounded-t-2xl transform -rotate-2 origin-bottom-right border-t border-white/20 flex items-center justify-center relative cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+<iconify-icon class="text-stone-800 opacity-60" icon="solar:eye-linear" width="26"></iconify-icon>
+</div>
+<div class="group w-28 md:w-36 h-14 bg-[#C8C6C2] rounded-t-2xl -ml-6 transform -rotate-1 origin-bottom-right border-t border-white/20 flex items-center justify-center relative z-10 cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+<iconify-icon class="text-stone-800 opacity-60" icon="solar:leaf-linear" width="26"></iconify-icon>
+</div>
+<div class="w-32 md:w-40 h-16 bg-[#D93A2B] rounded-t-2xl -ml-6 border-t border-white/40 flex items-center justify-center relative z-20 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-2 cursor-default">
+<iconify-icon class="text-stone-900" icon="solar:crown-star-linear" width="30"></iconify-icon>
+</div>
+</div>
+<div class="md:p-16 overflow-hidden flex flex-col lg:flex-row lg:gap-8 bg-stone-950 w-full bg-cover bg-center z-30 rounded-[2.5rem] pt-8 pr-8 pb-8 pl-8 relative shadow-2xl gap-x-16 gap-y-16 items-start justify-between">
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-2/3 bg-gradient-to-t from-blue-900/10 via-stone-900/50 to-transparent blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col justify-center h-full">
+<h2 class="text-5xl md:text-7xl font-newsreader font-normal text-white leading-[0.95] tracking-tight drop-shadow-lg">
+Imortal.
+<span class="font-normal text-orange-200">Curada.</span>
+Iluminadora.
+</h2>
+</div>
+<div class="relative z-10 w-full lg:w-[28rem] self-end lg:self-center">
+<div class="bg-[#D93A2B] rounded-3xl p-8 md:p-10 shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-500 group border border-stone-900/5">
+<h3 class="text-3xl font-newsreader font-normal text-stone-900 mb-4 leading-tight">
+Tours personalizados, a cada passo.
+</h3>
+<p class="text-stone-700 text-lg leading-relaxed mb-8 font-sans">
+Onde cada visitante é recebido com compreensão e cada caminho de exposição é uma jornada única de descobertas.
+</p>
+<div class="flex items-center justify-between border-t border-stone-900/10 pt-6">
+<div class="flex items-center gap-3">
+<div class="flex -space-x-3">
+<img alt="Detalhe" class="w-10 h-10 rounded-full border-2 border-[#D93A2B] grayscale opacity-80" src="../assets/images/galeria-6.png"/>
+<img alt="Detalhe" class="w-10 h-10 rounded-full border-2 border-[#D93A2B] grayscale opacity-80" src="../assets/images/section-movimento-img-v2.png"/>
+<div class="w-10 h-10 rounded-full bg-stone-800 text-[#D93A2B] flex items-center justify-center text-xs font-bold border-2 border-[#D93A2B] tracking-wide">+5k</div>
+</div>
+</div>
+<button class="w-12 h-12 rounded-full bg-stone-900 text-[#D93A2B] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-stone-900/20">
+<iconify-icon icon="solar:arrow-right-linear" width="24"></iconify-icon>
+</button>
+</div>
+</div>
+</div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-4">Abas: rounded-t-2xl -ml-6 -rotate-2/-rotate-1 origin-bottom-right hover:-translate-y-2 · Painel: rounded-[2.5rem] bg-cover bg-center shadow-2xl (na referência o painel carrega uma imagem de fundo remota via Supabase)</p>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Linha de link do footer</p>
+<div class="bg-stone-950 rounded-[2.5rem] overflow-hidden mb-4">
+<div class="grid grid-cols-1 md:grid-cols-2">
+<a class="group flex items-center justify-between p-6 border-b md:border-b-0 border-stone-800/50 md:border-r hover:bg-stone-900 transition-colors" href="#componentes">
+<div class="flex items-center gap-3 text-stone-300 group-hover:text-white">
+<iconify-icon icon="simple-icons:instagram" width="18"></iconify-icon>
+<span class="text-sm font-medium">Default — passe o mouse</span>
+</div>
+<iconify-icon class="text-stone-600 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" icon="solar:arrow-right-up-linear" width="18"></iconify-icon>
+</a>
+<a class="group flex items-center justify-between p-6 bg-stone-900 transition-colors" href="#componentes">
+<div class="flex items-center gap-3 text-white">
+<iconify-icon icon="simple-icons:x" width="18"></iconify-icon>
+<span class="text-sm font-medium">Hover</span>
+</div>
+<iconify-icon class="text-white translate-x-1 -translate-y-1 transition-transform duration-300" icon="solar:arrow-right-up-linear" width="18"></iconify-icon>
+</a>
+</div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words">group · hover:bg-stone-900 · group-hover:text-white · seta group-hover:translate-x-1 group-hover:-translate-y-1 duration-300</p>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 4) LAYOUT & ESPAÇAMENTO                                       -->
+<!-- ============================================================ -->
+<section id="layout" class="w-full bg-black py-24 px-6 md:px-12 relative font-sans border-t border-stone-300/30 scroll-mt-16">
+<div class="max-w-7xl mx-auto">
+
+<div class="max-w-2xl mb-16">
+<div class="flex items-center gap-2 text-stone-500 mb-6">
+<iconify-icon icon="solar:columns-linear" width="18"></iconify-icon>
+<span class="text-xs font-medium uppercase tracking-widest font-sans">04 — Layout &amp; Espaçamento</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-newsreader font-normal text-stone-900 mb-6 leading-[0.95] tracking-tight">
+Container de <span class="italic text-stone-600">1280px</span> e ritmo de 96px
+</h2>
+<p class="text-lg text-stone-600 leading-relaxed font-sans">Toda seção repete o mesmo esqueleto: <span class="font-geist-mono text-base">py-24 px-6 md:px-12</span> com um <span class="font-geist-mono text-base">max-w-7xl mx-auto</span> por dentro.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm">
+<h3 class="text-2xl font-newsreader font-medium text-stone-900 mb-2">Containers</h3>
+<ul class="space-y-4 mt-6">
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">max-w-7xl</span> · 1280px — seções principais</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">max-w-4xl</span> · 896px — bloco da newsletter</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">max-w-2xl</span> · 672px — barra de vidro, títulos</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">max-w-lg</span> · 512px — parágrafo do hero</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">max-w-md</span> · 448px — imagem do hero, formulário</li>
+</ul>
+</div>
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm">
+<h3 class="text-2xl font-newsreader font-medium text-stone-900 mb-2">Padding de seção</h3>
+<ul class="space-y-4 mt-6">
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">py-24</span> · 96px vertical em todas as seções</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">px-6 md:px-12</span> · 24px → 48px lateral</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">px-6 py-6 md:px-12</span> · barra de navegação</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">pb-12</span> · hero (sem py-24; ocupa a viewport)</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">p-8 md:p-10</span> · interior dos cards</li>
+</ul>
+</div>
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm">
+<h3 class="text-2xl font-newsreader font-medium text-stone-900 mb-2">Gaps e raios</h3>
+<ul class="space-y-4 mt-6">
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">gap-6 lg:gap-8</span> · 24px → 32px nas grades</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">gap-12 lg:gap-20</span> · colunas do hero</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">rounded-full</span> · botões, badges, avatares</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">rounded-2xl / rounded-3xl</span> · cards</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">rounded-[2.5rem]</span> · painel do feature</li>
+</ul>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Padrão 1 — split do hero (conteúdo / mídia)</p>
+<div class="mb-16">
+<div class="flex flex-col lg:flex-row lg:gap-20 w-full max-w-7xl mx-auto gap-12 items-center justify-center border border-stone-400/30 rounded-3xl p-6">
+<div class="flex-1 w-full flex flex-col items-start">
+<div class="w-full h-40 rounded-2xl bg-white border border-stone-200 shadow-sm flex items-center justify-center">
+<p class="font-geist-mono text-xs text-stone-500">flex-1 · coluna de texto (items-start)</p>
+</div>
+</div>
+<div class="flex-1 w-full flex items-center justify-center lg:justify-end">
+<div class="w-full max-w-md aspect-[3/4] rounded-t-[10rem] rounded-b-[2rem] bg-stone-900 flex items-end justify-center pb-8">
+<p class="font-geist-mono text-xs text-stone-400">max-w-md aspect-[3/4] rounded-t-[10rem]</p>
+</div>
+</div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-4">flex flex-col lg:flex-row lg:gap-20 max-w-7xl mx-auto px-6 md:px-12 pb-12 items-center justify-center</p>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Padrão 2 — cabeçalho 1/4 + 3/4 (seção missão)</p>
+<div class="mb-16">
+<div class="flex flex-col md:flex-row items-start gap-12 lg:gap-24 border border-stone-400/30 rounded-3xl p-6">
+<div class="w-full md:w-1/4 pt-3 flex flex-col gap-6">
+<div class="flex items-center gap-2 text-stone-500">
+<iconify-icon icon="solar:info-square-linear" width="18"></iconify-icon>
+<span class="text-xs font-medium uppercase tracking-widest font-sans">Nossa Missão</span>
+</div>
+</div>
+<div class="w-full md:w-3/4">
+<h2 class="text-3xl md:text-5xl leading-[1.1] tracking-tight font-newsreader font-normal text-stone-900">
+Coluna estreita para o rótulo, coluna larga para o manifesto. <span class="text-stone-500">O texto secundário recua de cor dentro do mesmo h2.</span>
+</h2>
+</div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-4">flex flex-col md:flex-row items-start gap-12 lg:gap-24 · md:w-1/4 + md:w-3/4</p>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Padrão 3 — grade de 3 colunas (missão e planos)</p>
+<div class="mb-16">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch border border-stone-400/30 rounded-3xl p-6">
+<div class="rounded-2xl aspect-[3/4] md:aspect-auto md:min-h-[220px] bg-stone-900 shadow-2xl shadow-black/20 flex items-end p-6">
+<p class="font-geist-mono text-xs text-stone-400">card de imagem</p>
+</div>
+<div class="rounded-2xl aspect-[3/4] md:aspect-auto md:min-h-[220px] bg-stone-900 shadow-2xl shadow-black/20 flex items-end p-6">
+<p class="font-geist-mono text-xs text-stone-400">card de imagem</p>
+</div>
+<div class="flex flex-col justify-end p-2 md:pl-8 lg:pl-12 pb-4">
+<p class="font-geist-mono text-xs text-stone-500">terceira coluna vira bloco de texto + CTA (justify-end)</p>
+</div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-4">grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch</p>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Padrão 4 — grade de links do footer</p>
+<div class="bg-stone-950 rounded-[2.5rem] p-8 md:p-12">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8">
+<div class="flex flex-col gap-6">
+<h4 class="text-[11px] font-bold tracking-[0.15em] uppercase text-stone-500 font-sans">Sobre o Museum</h4>
+<ul class="flex flex-col gap-3.5 text-sm text-stone-400">
+<li><a class="hover:text-white transition-colors" href="#layout">Nossa História</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Carreiras</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Conselho de Curadores</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-6">
+<h4 class="text-[11px] font-bold tracking-[0.15em] uppercase text-stone-500 font-sans">Visite</h4>
+<ul class="flex flex-col gap-3.5 text-sm text-stone-400">
+<li><a class="hover:text-white transition-colors" href="#layout">Tours e Audioguias</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Exposições</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Eventos Privados</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-6">
+<h4 class="text-[11px] font-bold tracking-[0.15em] uppercase text-stone-500 font-sans">Comunidade</h4>
+<ul class="flex flex-col gap-3.5 text-sm text-stone-400">
+<li><a class="hover:text-white transition-colors" href="#layout">Associação</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Círculo de Patronos</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Voluntariado</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-6">
+<h4 class="text-[11px] font-bold tracking-[0.15em] uppercase text-stone-500 font-sans">Legal</h4>
+<ul class="flex flex-col gap-3.5 text-sm text-stone-400">
+<li><a class="hover:text-white transition-colors" href="#layout">Termos de Serviço</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Política de Privacidade</a></li>
+<li><a class="hover:text-white transition-colors" href="#layout">Política de Cookies</a></li>
+</ul>
+</div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-8">grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 px-6 py-16 md:px-0</p>
+</div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 5) MOTION & INTERAÇÃO                                         -->
+<!-- ============================================================ -->
+<section id="motion" class="w-full bg-black py-24 px-6 md:px-12 relative font-sans border-t border-stone-300/30 scroll-mt-16">
+<div class="max-w-7xl mx-auto">
+
+<div class="max-w-2xl mb-16">
+<div class="flex items-center gap-2 text-stone-500 mb-6">
+<iconify-icon icon="solar:play-circle-linear" width="18"></iconify-icon>
+<span class="text-xs font-medium uppercase tracking-widest font-sans">05 — Motion &amp; Interação</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-newsreader font-normal text-stone-900 mb-6 leading-[0.95] tracking-tight">
+Só <span class="italic text-stone-600">transições</span> de hover
+</h2>
+<p class="text-lg text-stone-600 leading-relaxed font-sans">A referência não tem animações de entrada, scroll reveal nem <span class="font-geist-mono text-base">@keyframes</span> próprios — a única animação contínua é o <span class="font-geist-mono text-base">animate-pulse</span> do Tailwind. Todo o resto são transições disparadas por hover ou focus.</p>
+</div>
+
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm mb-16">
+<h3 class="text-2xl font-newsreader font-medium text-stone-900 mb-2">Valores base</h3>
+<ul class="space-y-4 mt-6">
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon>Duração padrão do Tailwind (sem <span class="font-geist-mono text-xs">duration-*</span>): <span class="font-geist-mono text-xs">150ms</span></li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon>Easing padrão: <span class="font-geist-mono text-xs">cubic-bezier(0.4, 0, 0.2, 1)</span> — nenhum easing customizado é declarado</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon>Durações usadas: <span class="font-geist-mono text-xs">300ms</span>, <span class="font-geist-mono text-xs">500ms</span>, <span class="font-geist-mono text-xs">700ms</span></li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">animate-pulse</span>: 2s cubic-bezier(0.4,0,0.6,1) infinite — opacidade 1 → .5</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon>Nenhum atraso (<span class="font-geist-mono text-xs">delay-*</span>) é usado em nenhum elemento</li>
+<li class="flex items-center gap-3 text-sm text-stone-700"><iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs">assets/css/scroll-fix.css</span> neutraliza <span class="font-geist-mono text-xs">opacity-0</span>, <span class="font-geist-mono text-xs">scale-0/50/75</span> e translates de tela cheia — não use essas classes para animar</li>
+</ul>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Motion Gallery — clique em “Reproduzir” ou passe o mouse</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+
+<!-- pulse -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-400/30 bg-stone-100/20 backdrop-blur-sm text-sm text-stone-700">
+<span class="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+<span class="font-sans">Aberto Agora</span>
+</div>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Pulso de status</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words">animate-pulse · 2s · infinito</p>
+</div>
+</div>
+
+<!-- botão primário -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center">
+<button id="m-primary" class="px-8 py-4 bg-stone-900 text-[#F7F5F1] rounded-full text-lg font-medium flex items-center justify-center gap-3 group transition-all hover:bg-stone-800 shadow-xl shadow-stone-900/10">
+<span class="font-sans">Reservar</span>
+<iconify-icon id="m-primary-icon" class="group-hover:translate-x-1 transition-transform" icon="solar:arrow-right-linear" width="20"></iconify-icon>
+</button>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Botão + seta</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">transition-all 150ms · group-hover:translate-x-1</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-primary,m-primary-icon" data-motion-classes="bg-stone-800|translate-x-1">Reproduzir</button>
+</div>
+</div>
+
+<!-- nav cta scale -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center">
+<a id="m-navcta" class="inline-flex items-center justify-center px-5 py-2.5 bg-stone-800 text-[#F7F5F1] rounded-full text-base font-medium transition-transform hover:scale-105 active:scale-95 font-sans" href="#motion">Comprar Ingressos</a>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Escala do CTA</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">hover:scale-105 · active:scale-95 · 150ms</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-navcta" data-motion-classes="scale-105">Reproduzir</button>
+</div>
+</div>
+
+<!-- image zoom -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 rounded-2xl overflow-hidden group mb-6">
+<img id="m-zoom" alt="Detalhe" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="../assets/images/section-2-img-1-v2.png"/>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Zoom da imagem</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">transition-transform duration-700 group-hover:scale-105</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-zoom" data-motion-classes="scale-105" data-motion-hold="900">Reproduzir</button>
+</div>
+</div>
+
+<!-- grayscale -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 rounded-2xl overflow-hidden group mb-6 bg-stone-900">
+<img id="m-gray" alt="Construção" class="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100" src="../assets/images/section-construcao.png"/>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Revelação de cor</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">grayscale → grayscale-0 · opacity-80 → 100 · duration-700</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-gray" data-motion-classes="grayscale-0 opacity-100" data-motion-hold="900">Reproduzir</button>
+</div>
+</div>
+
+<!-- logos grayscale -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center">
+<div id="m-logos" class="flex flex-wrap items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<iconify-icon class="text-stone-800" icon="simple-icons:britishmuseum" width="32"></iconify-icon>
+<iconify-icon class="text-stone-800" icon="simple-icons:artstation" width="32"></iconify-icon>
+<iconify-icon class="text-stone-800" icon="simple-icons:sothebys" width="32"></iconify-icon>
+</div>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Fileira de logos</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">opacity-60 grayscale hover:grayscale-0 transition-all duration-500</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-logos" data-motion-classes="grayscale-0" data-motion-hold="800">Reproduzir</button>
+</div>
+</div>
+
+<!-- rotate ticket -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center">
+<div id="m-rotate" class="w-40 h-20 bg-[#C8C6C2] shadow-2xl rounded-lg transform rotate-[-4deg] hover:rotate-0 transition-transform duration-500 flex items-center justify-center">
+<iconify-icon class="text-stone-800" icon="solar:ticket-star-linear" width="24"></iconify-icon>
+</div>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Endireitar card</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">rotate-[-4deg] hover:rotate-0 · duration-500 (também em rotate-[3deg] e rotate-2)</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-rotate" data-motion-classes="rotate-0" data-motion-hold="800">Reproduzir</button>
+</div>
+</div>
+
+<!-- tab lift -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-end justify-center pb-2">
+<div id="m-tab" class="w-28 h-14 bg-[#C8C6C2] rounded-t-2xl transform -rotate-1 origin-bottom-right border-t border-white/20 flex items-center justify-center cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+<iconify-icon class="text-stone-800 opacity-60" icon="solar:leaf-linear" width="26"></iconify-icon>
+</div>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Aba subindo</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">hover:-translate-y-2 · transition-transform duration-300</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-tab" data-motion-classes="-translate-y-2">Reproduzir</button>
+</div>
+</div>
+
+<!-- lime lift -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center">
+<button id="m-lime" class="group inline-flex items-center justify-center gap-3 px-6 py-4 bg-[#D93A2B] hover:bg-[#B03426] text-stone-900 rounded-xl font-medium transition-all duration-300 transform hover:-translate-y-1 shadow-lg shadow-[#D93A2B]/10">
+<span class="font-sans">Conheça a Equipe</span>
+<iconify-icon class="group-hover:translate-x-1 transition-transform duration-300" icon="solar:arrow-right-linear" width="20"></iconify-icon>
+</button>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Elevação do botão</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">hover:-translate-y-1 + hover:bg-[#B03426] · duration-300</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-lime" data-motion-classes="-translate-y-1 bg-[#B03426]">Reproduzir</button>
+</div>
+</div>
+
+<!-- circle scale -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center rounded-2xl bg-[#D93A2B]">
+<button id="m-circle" class="w-12 h-12 rounded-full bg-stone-900 text-[#D93A2B] flex items-center justify-center transition-transform hover:scale-110 shadow-lg shadow-stone-900/20">
+<iconify-icon icon="solar:arrow-right-linear" width="24"></iconify-icon>
+</button>
+</div>
+<div class="mt-6">
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Botão circular</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">group-hover:scale-110 · transition-transform 150ms</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-circle" data-motion-classes="scale-110">Reproduzir</button>
+</div>
+</div>
+
+<!-- footer arrow -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center rounded-2xl bg-stone-950">
+<a class="group flex items-center justify-between gap-8 p-6 hover:bg-stone-900 transition-colors w-full" href="#motion">
+<div class="flex items-center gap-3 text-stone-300 group-hover:text-white">
+<iconify-icon icon="simple-icons:instagram" width="18"></iconify-icon>
+<span class="text-sm font-medium">Instagram</span>
+</div>
+<iconify-icon id="m-arrow" class="text-stone-600 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" icon="solar:arrow-right-up-linear" width="18"></iconify-icon>
+</a>
+</div>
+<div class="mt-6">
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Seta diagonal</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">group-hover:translate-x-1 group-hover:-translate-y-1 · duration-300</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-arrow" data-motion-classes="translate-x-1 -translate-y-1 text-white">Reproduzir</button>
+</div>
+</div>
+
+<!-- link color -->
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="h-28 flex items-center justify-center">
+<div class="flex items-center gap-8 text-base text-stone-600">
+<a id="m-link" class="hover:text-stone-900 transition-colors font-sans" href="#motion">Exposições</a>
+<a class="hover:text-stone-900 transition-colors font-sans" href="#motion">Artistas</a>
+</div>
+</div>
+<div>
+<p class="text-sm font-medium text-stone-900 font-sans mb-1">Link da navegação</p>
+<p class="font-geist-mono text-xs text-stone-500 break-words mb-3">transition-colors 150ms · stone-600 → stone-900</p>
+<button class="text-xs font-medium uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors font-sans" data-motion-target="m-link" data-motion-classes="text-stone-900">Reproduzir</button>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6) ÍCONES                                                     -->
+<!-- ============================================================ -->
+<section id="icones" class="w-full bg-black py-24 px-6 md:px-12 relative font-sans border-t border-stone-300/30 scroll-mt-16">
+<div class="max-w-7xl mx-auto">
+
+<div class="max-w-2xl mb-16">
+<div class="flex items-center gap-2 text-stone-500 mb-6">
+<iconify-icon icon="solar:star-fall-linear" width="18"></iconify-icon>
+<span class="text-xs font-medium uppercase tracking-widest font-sans">06 — Ícones</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-newsreader font-normal text-stone-900 mb-6 leading-[0.95] tracking-tight">
+Iconify: <span class="italic text-stone-600">Solar</span> e Simple Icons
+</h2>
+<p class="text-lg text-stone-600 leading-relaxed font-sans">Todos os ícones são <span class="font-geist-mono text-base">&lt;iconify-icon&gt;</span> com atributo <span class="font-geist-mono text-base">width</span>. A cor vem por herança — não há <span class="font-geist-mono text-base">fill</span> declarado em lugar nenhum.</p>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Escala de tamanhos (atributo width, em px)</p>
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm mb-16">
+<div class="flex flex-wrap items-end gap-10">
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">14</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">16</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">18</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="20"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">20</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">24</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="26"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">26</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="28"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">28</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="30"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">30</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">32</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="40"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">40</span></div>
+<div class="flex flex-col items-center gap-3"><iconify-icon icon="solar:arrow-right-linear" width="48"></iconify-icon><span class="font-geist-mono text-xs text-stone-500">48</span></div>
+</div>
+<p class="font-geist-mono text-xs text-stone-500 break-words mt-8">14/16 detalhes de card · 18 links do footer · 20/24 botões · 26/30 abas · 32/40 logos · 48 ornamento do hero · 600 marca d'água do footer</p>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Herança de cor</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 mb-16">
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col items-center gap-4">
+<iconify-icon class="text-stone-800" icon="solar:ticket-star-linear" width="32"></iconify-icon>
+<p class="font-geist-mono text-xs text-stone-500 text-center">text-stone-800</p>
+</div>
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm flex flex-col items-center gap-4">
+<iconify-icon class="text-stone-400 shrink-0" icon="solar:check-circle-linear" width="32"></iconify-icon>
+<p class="font-geist-mono text-xs text-stone-500 text-center">text-stone-400</p>
+</div>
+<div class="bg-stone-900 rounded-3xl p-8 flex flex-col items-center gap-4">
+<iconify-icon class="text-[#D93A2B] shrink-0" icon="solar:check-circle-bold" width="32"></iconify-icon>
+<p class="font-geist-mono text-xs text-stone-500 text-center">text-[#D93A2B]</p>
+</div>
+<div class="bg-stone-900 rounded-3xl p-8 flex flex-col items-center gap-4">
+<iconify-icon class="text-stone-400" icon="solar:share-linear" width="32"></iconify-icon>
+<p class="font-geist-mono text-xs text-stone-500 text-center">text-stone-400 (card escuro)</p>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Solar — variante linear (interface)</p>
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm mb-8">
+<div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-8">
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:magnifer-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">magnifer</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:hamburger-menu-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">hamburger-menu</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:arrow-right-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">arrow-right</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:arrow-left-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">arrow-left</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:arrow-right-up-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">arrow-right-up</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:play-circle-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">play-circle</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:pause-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">pause</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:star-fall-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">star-fall</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:ticket-star-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">ticket-star</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:map-arrow-right-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">map-arrow-right</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:share-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">share</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:heart-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">heart</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:info-square-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">info-square</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:eye-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">eye</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:leaf-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">leaf</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:crown-star-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">crown-star</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:crown-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">crown</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:backpack-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">backpack</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:user-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">user</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:check-circle-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">check-circle</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:letter-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">letter</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:mailbox-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">mailbox</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon icon="solar:columns-linear" width="24"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">columns</span></div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Solar — variante bold (só na lista do plano destacado)</p>
+<div class="bg-stone-900 rounded-3xl p-8 mb-16">
+<div class="flex items-center gap-8">
+<iconify-icon class="text-[#D93A2B] shrink-0" icon="solar:check-circle-bold" width="24"></iconify-icon>
+<p class="font-geist-mono text-xs text-stone-500">solar:check-circle-bold — único uso de variante bold em toda a referência</p>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Simple Icons — marcas (parceiros e redes sociais)</p>
+<div class="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm mb-16">
+<div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-8">
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:britishmuseum" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">britishmuseum</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:artstation" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">artstation</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:sothebys" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">sothebys</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:kickstarter" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">kickstarter</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:britishairways" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">britishairways</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:patreon" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">patreon</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:medium" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">medium</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:instagram" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">instagram</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:x" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">x</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:youtube" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">youtube</span></div>
+<div class="flex flex-col items-center gap-3 text-center"><iconify-icon class="text-stone-800" icon="simple-icons:facebook" width="32"></iconify-icon><span class="font-geist-mono text-xs text-stone-500 break-all">facebook</span></div>
+</div>
+</div>
+
+<p class="text-sm text-stone-500 mb-6 font-medium uppercase tracking-widest font-sans">Ícone como ornamento</p>
+<div class="bg-stone-950 rounded-[2.5rem] relative overflow-hidden h-64">
+<div class="absolute top-[-20%] left-1/2 -translate-x-1/2 pointer-events-none opacity-[0.03] select-none">
+<iconify-icon class="text-white" height="600" icon="solar:columns-linear" width="600"></iconify-icon>
+</div>
+<div class="relative z-10 h-full flex items-center justify-center px-8">
+<p class="font-geist-mono text-xs text-stone-500 text-center break-words">width="600" height="600" · opacity-[0.03] · top-[-20%] left-1/2 -translate-x-1/2 · marca d'água do footer</p>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- rodapé do design system                                       -->
+<!-- ============================================================ -->
+<footer class="bg-stone-950 text-stone-400 relative overflow-hidden font-sans border-t border-stone-900">
+<div class="max-w-7xl mx-auto md:px-12 relative z-10">
+<div class="flex flex-col md:flex-row items-center justify-between py-10 px-6 md:px-0 gap-6">
+<div class="flex items-center gap-3 opacity-60">
+<div class="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center text-stone-400">
+<span class="font-newsreader italic font-bold text-lg">M</span>
+</div>
+<span class="text-sm font-medium tracking-tight text-stone-500">Design System — extraído de index.html</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-stone-500 text-sm">
+<div class="w-2 h-2 rounded-full bg-green-500/50 animate-pulse"></div>
+Tailwind CSS · Iconify · Google Fonts
+</div>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- js -->
+<!-- pré-aquecimento do runtime Tailwind: o CDN só gera as classes que existem em algum
+     atributo class do DOM. As classes abaixo são os estados finais que a Motion Gallery
+     adiciona por JS; elas só aparecem na referência como variantes hover:, por isso
+     precisam existir aqui para que a primeira reprodução já anime. Sem efeito visual. -->
+<div class="hidden grayscale-0 opacity-100 rotate-0 -translate-y-2" aria-hidden="true"></div>
+<!-- broken-image fallback handler; rotates failed <img> srcs to a known-good asset -->
+<script src="assets/js/image-fallback.js"></script>
+<!-- motion gallery: aplica temporariamente as classes de hover para reproduzir a transição -->
+<script>
+document.querySelectorAll("[data-motion-target]").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    var ids = btn.dataset.motionTarget.split(",");
+    var groups = btn.dataset.motionClasses.split("|");
+    var hold = parseInt(btn.dataset.motionHold || "700", 10);
+    ids.forEach(function (id, i) {
+      var el = document.getElementById(id.trim());
+      if (!el) return;
+      var classes = (groups[i] || groups[0]).split(" ").filter(Boolean);
+      classes.forEach(function (c) { el.classList.add(c); });
+      setTimeout(function () {
+        classes.forEach(function (c) { el.classList.remove(c); });
+      }, hold);
+    });
+  });
+});
+</script>
+</body>
+</html>
