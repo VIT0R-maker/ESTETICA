@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orient — Sound, suspended</title>
+<title>Orient — Engenharia japonesa no seu pulso</title>
+<meta name="description" content="Relógio Orient: movimento de quartzo japonês com precisão de ±20s/mês, caixa em aço inoxidável 316L de 42mm e resistência à água de 5 ATM.">
+<meta name="theme-color" content="#000000">
+
+<!-- Open Graph — como o link aparece ao ser compartilhado. -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="Orient — Engenharia japonesa no seu pulso">
+<meta property="og:description" content="Movimento de quartzo japonês, caixa em aço 316L de 42mm e 5 ATM de resistência à água.">
+<meta property="og:image" content="assets/images/section-2-img-1-v2.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/images/logo_orient.png" type="image/png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -389,137 +402,12 @@
   © Orient — Made in Japan since 1950
 </footer>
 
-<script src="assets/js/main.js"></script>
-
-<script>
-/* ============ CAIXA REVEAL VIDEO SCRUB ============ */
-(function initCaixaRevealScrub() {
-  const section = document.getElementById('caixaReveal');
-  if (!section) return;
-
-  const video = section.querySelector('.caixa-reveal__video');
-  const track = section.querySelector('.caixa-reveal__track');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (!video || !track || reduceMotion.matches) return;
-
-  const clamp01 = value => Math.max(0, Math.min(1, value));
-  let videoDuration = 0;
-  let pendingFrame = null;
-  let lastProgress = -1;
-
-  function syncDuration() {
-    if (video.duration && !Number.isNaN(video.duration)) {
-      videoDuration = video.duration;
-    }
-  }
-
-  function updateCaixaReveal() {
-    syncDuration();
-    if (!videoDuration) return;
-
-    const rect = track.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const scrollableDistance = Math.max(1, rect.height - viewportHeight);
-    const progress = clamp01(-rect.top / scrollableDistance);
-
-    if (Math.abs(progress - lastProgress) < 0.001) return;
-    lastProgress = progress;
-
-    const targetTime = progress * videoDuration;
-    if (Math.abs(video.currentTime - targetTime) > 0.04) {
-      try { video.currentTime = targetTime; } catch (e) {}
-    }
-  }
-
-  function requestCaixaRevealUpdate() {
-    if (pendingFrame !== null) return;
-    pendingFrame = requestAnimationFrame(() => {
-      pendingFrame = null;
-      updateCaixaReveal();
-    });
-  }
-
-  video.pause();
-  video.currentTime = 0;
-  video.addEventListener('loadedmetadata', () => {
-    syncDuration();
-    requestCaixaRevealUpdate();
-  }, { once: true });
-
-  try { video.load(); } catch (e) {}
-
-  window.addEventListener('scroll', requestCaixaRevealUpdate, { passive: true });
-  window.addEventListener('resize', requestCaixaRevealUpdate, { passive: true });
-  requestCaixaRevealUpdate();
-})();
-</script>
-
-<script>
-/* ============ CASE SCROLL ZOOM ============ */
-(function initCaseScrollZoom() {
-  const section = document.getElementById('case');
-  if (!section) return;
-
-  const track = section.querySelector('.case-scroll-track');
-  const pin = section.querySelector('.case-scroll-pin');
-  const shell = section.querySelector('.case-scroll-image-shell');
-  const imageFrame = section.querySelector('.case-scroll-image');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (!track || !pin || !shell || !imageFrame || reduceMotion.matches) return;
-
-  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-  const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  const clamp01 = value => Math.max(0, Math.min(1, value));
-
-  function offsetTopWithin(element, ancestor) {
-    let offset = 0;
-    let node = element;
-    while (node && node !== ancestor) {
-      offset += node.offsetTop;
-      node = node.offsetParent;
-    }
-    return offset;
-  }
-
-  function updateCaseZoom() {
-    const vh = window.innerHeight;
-    const vw = window.innerWidth;
-    const trackTop = track.getBoundingClientRect().top + window.scrollY;
-    const scrubbable = Math.max(1, track.offsetHeight - vh);
-    const progress = clamp01((window.scrollY - trackTop) / scrubbable);
-    const expandT = clamp01((progress - 0.18) / 0.68);
-    const expanded = easeInOutCubic(expandT);
-
-    const frameWidth = imageFrame.offsetWidth || shell.offsetWidth || 1;
-    const frameHeight = imageFrame.offsetHeight || shell.offsetHeight || 1;
-    const targetScale = Math.max(vw / frameWidth, vh / frameHeight) * 1.02;
-    const currentScale = 1 + (targetScale - 1) * expanded;
-    const shellCenterY = offsetTopWithin(shell, pin) + (shell.offsetHeight / 2);
-    const centeredShift = (vh / 2) - shellCenterY;
-    const copyOpacity = 1 - easeOutCubic(clamp01(progress / 0.34));
-
-    section.style.setProperty('--case-scale', currentScale.toFixed(4));
-    section.style.setProperty('--case-shift-y', `${(centeredShift * expanded).toFixed(1)}px`);
-    section.style.setProperty('--case-radius', `${(16 * (1 - expanded)).toFixed(1)}px`);
-    section.style.setProperty('--case-border-opacity', (1 - expanded).toFixed(3));
-    section.style.setProperty('--case-copy-opacity', copyOpacity.toFixed(3));
-    section.style.setProperty('--case-copy-y', `${((1 - copyOpacity) * -20).toFixed(1)}px`);
-  }
-
-  let pendingFrame = null;
-  function requestCaseZoomUpdate() {
-    if (pendingFrame !== null) return;
-    pendingFrame = requestAnimationFrame(() => {
-      pendingFrame = null;
-      updateCaseZoom();
-    });
-  }
-
-  window.addEventListener('scroll', requestCaseZoomUpdate, { passive: true });
-  window.addEventListener('resize', requestCaseZoomUpdate, { passive: true });
-  requestCaseZoomUpdate();
-})();
-</script>
+<!-- Cada efeito de scroll vive em seu próprio arquivo, na mesma ordem em que
+     aparece na página. Todos são independentes e saem de cena sozinhos se a
+     seção correspondente não existir. -->
+<script src="assets/js/hero-video-scrub.js"></script>
+<script src="assets/js/caixa-reveal.js"></script>
+<script src="assets/js/case-zoom.js"></script>
 
 </body>
 </html>

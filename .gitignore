@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Screenshots e arquivos de rascunho gerados durante o desenvolvimento
+*.png.bak
+_shot.html
+/tmp/
+
+# Permissões locais do Claude Code — específicas da sua máquina
+.claude/settings.local.json
