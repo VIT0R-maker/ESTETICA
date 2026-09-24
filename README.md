@@ -126,3 +126,4 @@ sem a animação.
 Ao trocar uma imagem, mantenha os atributos `width` e `height` no `<img>`
 batendo com as dimensões reais do arquivo. É o que impede o layout de pular
 enquanto a imagem carrega.
+# TESTE
